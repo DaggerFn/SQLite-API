@@ -1,0 +1,10 @@
+meu_projeto/
+│── app/
+│   ├── __init__.py        # Inicializa o Flask
+│   ├── routes.py          # Define as rotas (CRUD)
+│   ├── database.py        # Gerencia o banco SQLite usando sqlite3
+│── instance/
+│   ├── meu_banco.sqlite   # Banco de dados (gerado automaticamente)
+│── requirements.txt       # Dependências do projeto
+│── run.py                 # Arquivo principal para rodar o Flask
+│── README.md              # Documentação do projeto
