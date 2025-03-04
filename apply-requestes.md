@@ -1,6 +1,3 @@
-# SQLite-API
-
-
 
 # ✅ **POST**
 
