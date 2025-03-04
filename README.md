@@ -1,6 +1,12 @@
 # SQLite-API
 
 
+# ✅ **GET**
+
+```
+http://127.0.0.1:5000/materiais
+```
+
 
 # ✅ **POST**
 
@@ -40,7 +46,7 @@ Vá até a aba Body, escolha JSON e envie os novos dados:
 
 ```json
 {
-  "localce_material": "02-05-08",
+  "locale_material": "02-05-08",
   "description_material": "Rotor_Revisado"
 }
 ```
