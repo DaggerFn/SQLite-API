@@ -57,3 +57,21 @@ def init_routes(app):
         conn.commit()
 
         return jsonify({"message": "Material atualizado com sucesso!"}), 200
+    
+    
+    @app.route("/materiais/<id_material>", methods=["GET"])
+    def searchGet(id_material):
+        conn = get_db()
+        
+        cursor = conn.execute("SELECT * FROM materiais WHERE id_material = ?", (id_material,))
+        material = cursor.fetchone()
+        
+        if not material:
+            return jsonify({"error": "Material não encontrado"}), 404
+        
+        for row in material:
+            print(row)
+
+        print(dict(material))
+        
+        return jsonify([dict(material)])
