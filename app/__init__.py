@@ -7,7 +7,7 @@ def create_app():
     # Habilitar CORS para todos os métodos
     CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE"]}})
     
-    app.config["DATABASE"] = "instance/meu_banco.sqlite"
+    app.config["DATABASE"] = "instance/database.sqlite"
 
     from app.routes import init_routes
     init_routes(app)

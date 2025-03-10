@@ -5,7 +5,7 @@ def init_routes(app):
     @app.route("/materiais", methods=["GET"])
     def get_materiais():
         conn = get_db()
-        materiais = conn.execute("SELECT * FROM materiais").fetchall()
+        materiais = conn.execute("SELECT * FROM tabel_materials").fetchall()
         return jsonify([dict(row) for row in materiais])
 
     @app.route("/materiais", methods=["POST"])
@@ -17,8 +17,8 @@ def init_routes(app):
 
         conn = get_db()
         cursor = conn.execute(
-            "INSERT INTO materiais (id_material, locale_material, description_material) VALUES (?, ?, ?)",
-            (data["id_material"], data["locale_material"], data["description_material"])
+            "INSERT INTO tabel_materials (id_material, locale_material, quantidade, description_material, last_mod) VALUES (?, ?, ?, ?, ?, ?)",
+            (data["id_material"], data["locale_material"], data["quantidade"], data["description_material"], data["last_mod"])
         )
         conn.commit()
 
@@ -28,7 +28,7 @@ def init_routes(app):
     @app.route("/materiais/<id_material>", methods=["DELETE"])
     def delete_material(id_material):
         conn = get_db()
-        cursor = conn.execute("DELETE FROM materiais WHERE id_material = ?", (id_material,))
+        cursor = conn.execute("DELETE FROM tabel_materials WHERE id_material = ?", (id_material,))
         conn.commit()
         
         # Verifica se alguma linha foi afetada
@@ -43,7 +43,7 @@ def init_routes(app):
         conn = get_db()
 
         # Verifica se o material existe antes de tentar atualizar
-        cursor = conn.execute("SELECT * FROM materiais WHERE id_material = ?", (id_material,))
+        cursor = conn.execute("SELECT * FROM tabel_materials WHERE id_material = ?", (id_material,))
         material = cursor.fetchone()
         
         if not material:
@@ -51,8 +51,9 @@ def init_routes(app):
 
         # Atualiza os dados no banco de dados
         conn.execute(
-            "UPDATE materiais SET locale_material = ?, description_material = ? WHERE id_material = ?",
-            (data["locale_material"], data["description_material"], id_material)
+            "UPDATE materiais SET locale_material = ?, quantidade = ?, description_material = ? , last_mod = ? WHERE id_material = ?",
+            (data["locale_material"], data["quantidade"], data["description_material"], data["last_mod"])
+            # (data["locale_material"], data["description_material"], id_material)
         )
         conn.commit()
 
@@ -63,15 +64,16 @@ def init_routes(app):
     def searchGet(id_material):
         conn = get_db()
         
-        cursor = conn.execute("SELECT * FROM materiais WHERE id_material = ?", (id_material,))
+        cursor = conn.execute("SELECT * FROM tabel_materials WHERE id_material = ?", (id_material,))
         material = cursor.fetchone()
         
         if not material:
             return jsonify({"error": "Material não encontrado"}), 404
         
+        '''
         for row in material:
             print(row)
 
         print(dict(material))
-        
+        '''
         return jsonify([dict(material)])
