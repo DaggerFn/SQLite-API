@@ -1,5 +1,7 @@
 from flask import request, jsonify
 from app.database import get_db
+from datetime import datetime
+
 
 def init_routes(app):
     @app.route("/materiais", methods=["GET"])
@@ -11,14 +13,17 @@ def init_routes(app):
     @app.route("/materiais", methods=["POST"])
     def create_material():
         data = request.get_json()
-
+        now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # print(now_str,' < tipo de var > ', type(now_str))
+        
         if not data:
             return jsonify({"error": "Nenhum dado enviado"}), 400
 
         conn = get_db()
         cursor = conn.execute(
-            "INSERT INTO tabel_materials (id_material, locale_material, quantidade, description_material, last_mod) VALUES (?, ?, ?, ?, ?, ?)",
-            (data["id_material"], data["locale_material"], data["quantidade"], data["description_material"], data["last_mod"])
+            "INSERT INTO tabel_materials (id_material, locale_material, quantidade, description_material, last_mod) VALUES (?, ?, ?, ?, ?)",
+            (data["id_material"], data["locale_material"], data["quantidade"], data["description_material"], now_str)
+            
         )
         conn.commit()
 
