@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_PATH = "/home/guts/Documentos/projects/SQLite-api-flask/SQLite-API/instance/database.sqlite"
+DB_PATH = "instance/database copy.sqlite"
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
