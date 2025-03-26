@@ -46,6 +46,9 @@ def init_routes(app):
     def update_material(id_material):
         data = request.get_json()  # Obtém os dados enviados no JSON
         conn = get_db()
+        now_str_for_put = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        
 
         # Verifica se o material existe antes de tentar atualizar
         cursor = conn.execute("SELECT * FROM tabel_materials WHERE id_material = ?", (id_material,))
@@ -56,9 +59,8 @@ def init_routes(app):
 
         # Atualiza os dados no banco de dados
         conn.execute(
-            "UPDATE materiais SET locale_material = ?, quantidade = ?, description_material = ? , last_mod = ? WHERE id_material = ?",
-            (data["locale_material"], data["quantidade"], data["description_material"], data["last_mod"])
-            # (data["locale_material"], data["description_material"], id_material)
+            "UPDATE tabel_materials SET locale_material = ?, quantidade = ?, description_material = ? , last_mod = ?, id_material = ?",
+            (data["locale_material"], data["quantidade"], data["description_material"],now_str_for_put, id_material)
         )
         conn.commit()
 
