@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_PATH = "instance/database copy.sqlite"
+DB_PATH = "instance/database copy 2.sqlite"
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
