@@ -97,8 +97,6 @@ def init_routes(app):
         print(dict(material))
         '''
         
-        
-        
         data = {'id': 1001,
                  'id_material': 11146098, 
                  'locale_material': '02-13-05', 
