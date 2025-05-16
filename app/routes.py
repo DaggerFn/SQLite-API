@@ -42,30 +42,43 @@ def init_routes(app):
         
         return jsonify({"message": "Material deletado com sucesso!"}), 200
     
-    @app.route("/materiais/<id_material>", methods=["PUT"])
+    # Atualiza o material
+    @app.route("/materiais/<int:id_material>", methods=["PUT"])
     def update_material(id_material):
-        data = request.get_json()  # Obtém os dados enviados no JSON
+        data = request.get_json()
         conn = get_db()
         now_str_for_put = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
-        
 
-        # Verifica se o material existe antes de tentar atualizar
-        cursor = conn.execute("SELECT * FROM tabel_materials WHERE id_material = ?", (id_material,))
-        material = cursor.fetchone()
-        
-        if not material:
+        # Verifica se existe
+        cursor = conn.execute(
+            "SELECT 1 FROM tabel_materials WHERE id_material = ?",
+            (id_material,)
+        )
+        if cursor.fetchone() is None:
             return jsonify({"error": "Material não encontrado"}), 404
 
-        # Atualiza os dados no banco de dados
+        # Atualiza somente a linha cujo id_material bate
         conn.execute(
-            "UPDATE tabel_materials SET locale_material = ?, quantidade = ?, description_material = ? , last_mod = ?, id_material = ?",
-            (data["locale_material"], data["quantidade"], data["description_material"],now_str_for_put, id_material)
+            """
+            UPDATE tabel_materials
+            SET locale_material     = ?,
+                quantidade          = ?,
+                description_material= ?,
+                last_mod            = ?
+            WHERE id_material        = ?
+            """,
+            (
+                data["locale_material"],
+                data["quantidade"],
+                data["description_material"],
+                now_str_for_put,
+                id_material
+            )
         )
         conn.commit()
 
         return jsonify({"message": "Material atualizado com sucesso!"}), 200
-    
+
     
     @app.route("/materiais/<id_material>", methods=["GET"])
     def searchGet(id_material):
@@ -83,4 +96,20 @@ def init_routes(app):
 
         print(dict(material))
         '''
+        
+        
+        
+        data = {'id': 1001,
+                 'id_material': 11146098, 
+                 'locale_material': '02-13-05', 
+                 'quantidade': 10, 
+                 'description_material': 'Z', 
+                 'last_mod': '2025-05-16 08:17:00'}
+        
+        print(material["quantidade"])
+        
+        
+        if material["quantidade"] == 0:
+            return jsonify({"error": "Material indisponível no Estoque"}), 404
+        
         return jsonify([dict(material)])
