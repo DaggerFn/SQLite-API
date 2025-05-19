@@ -4,12 +4,18 @@ from datetime import datetime
 
 
 def init_routes(app):
+    # Busca Materiais
     @app.route("/materiais", methods=["GET"])
     def get_materiais():
         conn = get_db()
+        # # Remove todos os materiais com quantidade igual a 0
+        conn.execute("DELETE FROM tabel_materials WHERE quantidade = 0")
+        conn.commit()
+        # Busca todos os materiais restantes
         materiais = conn.execute("SELECT * FROM tabel_materials").fetchall()
         return jsonify([dict(row) for row in materiais])
 
+    # Cria o material
     @app.route("/materiais", methods=["POST"])
     def create_material():
         data = request.get_json()
@@ -29,7 +35,7 @@ def init_routes(app):
 
         return jsonify({"message": "Material inserido com sucesso!"}), 201
 
-    
+    # Deleta o material
     @app.route("/materiais/<id_material>", methods=["DELETE"])
     def delete_material(id_material):
         conn = get_db()
@@ -79,7 +85,7 @@ def init_routes(app):
 
         return jsonify({"message": "Material atualizado com sucesso!"}), 200
 
-    
+    # Busca o material específico
     @app.route("/materiais/<id_material>", methods=["GET"])
     def searchGet(id_material):
         conn = get_db()
@@ -91,11 +97,12 @@ def init_routes(app):
             return jsonify({"error": "Material não encontrado"}), 404
         
         '''
+        # mock de data e visualização dos dados
         for row in material:
             print(row)
 
         print(dict(material))
-        '''
+        
         
         data = {'id': 1001,
                  'id_material': 11146098, 
@@ -105,9 +112,12 @@ def init_routes(app):
                  'last_mod': '2025-05-16 08:17:00'}
         
         print(material["quantidade"])
-        
+        '''
         
         if material["quantidade"] == 0:
+            conn.execute("DELETE FROM tabel_materials WHERE quantidade = 0")
+            conn.commit()
+
             return jsonify({"error": "Material indisponível no Estoque"}), 404
         
         return jsonify([dict(material)])
