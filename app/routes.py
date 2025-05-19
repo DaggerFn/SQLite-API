@@ -167,9 +167,9 @@ def init_routes(app):
         
         flask_response = requests.get(api_link_description)
 
-        if "description_material" not in data:
-            # Se não houver descrição, defina um valor padrão
-            data["description_material"] = "Sem descrição"
+        if "description_material" not in data or data["description_material"] is '':
+            # Se não houver descrição, defina um valorr padrão
+            # data["description_material"] = "Sem descrição"
 
             # Verifica se a resposta da API foi bem-sucedida
             if flask_response.status_code == 200:
@@ -181,7 +181,6 @@ def init_routes(app):
             else:
                 # Se a API não retornar sucesso, defina um valor padrão
                 data["description_material"] = "Sem descrição"
-
         
         
         print(dict(data))
