@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from app.database import get_db
 from datetime import datetime
+import requests
 
 
 def init_routes(app):
@@ -15,7 +16,7 @@ def init_routes(app):
         materiais = conn.execute("SELECT * FROM tabel_materials").fetchall()
         return jsonify([dict(row) for row in materiais])
 
-    # Cria o material
+    # Cria/Registra o material
     @app.route("/materiais", methods=["POST"])
     def create_material():
         data = request.get_json()
@@ -25,12 +26,17 @@ def init_routes(app):
         if not data:
             return jsonify({"error": "Nenhum dado enviado"}), 400
 
+        get_description(data)
+
+
         conn = get_db()
         cursor = conn.execute(
             "INSERT INTO tabel_materials (id_material, locale_material, quantidade, description_material, last_mod) VALUES (?, ?, ?, ?, ?)",
             (data["id_material"], data["locale_material"], data["quantidade"], data["description_material"], now_str)
             
         )
+
+
         conn.commit()
 
         return jsonify({"message": "Material inserido com sucesso!"}), 201
@@ -121,3 +127,63 @@ def init_routes(app):
             return jsonify({"error": "Material indisponível no Estoque"}), 404
         
         return jsonify([dict(material)])
+    
+    
+    
+    def get_description(data):
+
+
+        # api_link_description = f"http://127.0.0.1:4000/completo/{data["id_material"]}"
+        api_link_description = f"http://127.0.0.1:6000/test"
+        
+        
+        '''Mock of api response
+        
+        {
+        "ClassList": {
+            "Class": {
+            "CharacteristicList": {
+                "Characteristic": {
+                "DataType": null,
+                "Name": "ZPESO_CALCULADO_01",
+                "Value": "00001",
+                "ValueDescription": {
+                    "#text": "SIM",
+                    "@language": "PT"
+                }
+                }
+            },
+            "Name": "MAT_ADM_MOTOR"
+            }
+        },
+        "ClassType": "001",
+        "MaterialDescription": "MOTOR 5.5kW 4P 132S WFF2", <----- description,(i need get this value and pass for data["description_material"])
+        "MaterialNumber": "17329732",
+        "ValidFrom": "2025-05-17"
+        }
+        
+        '''
+        
+        
+        flask_response = requests.get(api_link_description)
+
+        if "description_material" not in data:
+            # Se não houver descrição, defina um valor padrão
+            data["description_material"] = "Sem descrição"
+
+            # Verifica se a resposta da API foi bem-sucedida
+            if flask_response.status_code == 200:
+                # Converte a resposta JSON em um dicionário
+                response_data = flask_response.json()
+                
+                # Acessa o valor desejado
+                data["description_material"] = response_data["MaterialDescription"]
+            else:
+                # Se a API não retornar sucesso, defina um valor padrão
+                data["description_material"] = "Sem descrição"
+
+        
+        
+        print(dict(data))
+        
+        return data
