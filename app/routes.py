@@ -134,8 +134,9 @@ def init_routes(app):
 
 
         # api_link_description = f"http://127.0.0.1:4000/completo/{data["id_material"]}"
-        api_link_description = f"http://127.0.0.1:6000/test"
         
+        
+        api_link_description = f"http://127.0.0.1:6000/test"
         
         '''Mock of api response
         
@@ -164,25 +165,37 @@ def init_routes(app):
         
         '''
         
+        try:
+
+            flask_response = requests.get(api_link_description)
         
-        flask_response = requests.get(api_link_description)
-
-        if "description_material" not in data or data["description_material"] is '':
-            # Se não houver descrição, defina um valorr padrão
-            # data["description_material"] = "Sem descrição"
-
-            # Verifica se a resposta da API foi bem-sucedida
-            if flask_response.status_code == 200:
-                # Converte a resposta JSON em um dicionário
-                response_data = flask_response.json()
-                
-                # Acessa o valor desejado
-                data["description_material"] = response_data["MaterialDescription"]
-            else:
-                # Se a API não retornar sucesso, defina um valor padrão
+            if flask_response.status_code == 404:
+                # Se a API retornar 404, defina um valor padrão
                 data["description_material"] = "Sem descrição"
+                print("API retornou 404 - Definindo descrição padrão.")
         
         
-        print(dict(data))
+            if "description_material" not in data or data["description_material"] is '':
+                # Se não houver descrição, defina um valorr padrão
+                # data["description_material"] = "Sem descrição"
+
+                # Verifica se a resposta da API foi bem-sucedida
+                if flask_response.status_code == 200:
+                    # Converte a resposta JSON em um dicionário
+                    response_data = flask_response.json()
+                    
+                    # Acessa o valor desejado
+                    data["description_material"] = response_data["MaterialDescription"]
+                else:
+                    # Se a API não retornar sucesso, defina um valor padrão
+                    data["description_material"] = "Sem descrição"
+            
+            
+            print(dict(data))
+
+        except KeyError as e:
+            # Se a chave não existir, defina um valor padrão
+            data["description_material"] = "Sem descrição"
+            print(f"KeyError: {e} - Definindo descrição padrão.")
         
         return data
