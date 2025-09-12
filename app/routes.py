@@ -44,28 +44,29 @@ def init_routes(app):
     
     @app.route("/materiais/<id_material>", methods=["PUT"])
     def update_material(id_material):
-        data = request.get_json()  # Obtém os dados enviados no JSON
+        data = request.get_json()
         conn = get_db()
         now_str_for_put = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
-        
 
-        # Verifica se o material existe antes de tentar atualizar
+        # Verifica se o material existe (esta parte já estava correta)
         cursor = conn.execute("SELECT * FROM tabel_materials WHERE id_material = ?", (id_material,))
         material = cursor.fetchone()
         
         if not material:
             return jsonify({"error": "Material não encontrado"}), 404
 
-        # Atualiza os dados no banco de dados
-        conn.execute(
-            "UPDATE tabel_materials SET locale_material = ?, quantidade = ?, description_material = ? , last_mod = ?, id_material = ?",
-            (data["locale_material"], data["quantidade"], data["description_material"],now_str_for_put, id_material)
-        )
-        conn.commit()
-
-        return jsonify({"message": "Material atualizado com sucesso!"}), 200
-    
+        try:
+            # Atualiza os dados no banco de dados, agora com a cláusula WHERE
+            conn.execute(
+                "UPDATE tabel_materials SET locale_material = ?, quantidade = ?, description_material = ?, last_mod = ? WHERE id_material = ?",
+                (data["locale_material"], data["quantidade"], data["description_material"], now_str_for_put, id_material)
+            )
+            conn.commit()
+            return jsonify({"message": "Material atualizado com sucesso!"}), 200
+        except Exception as e:
+            # É uma boa prática adicionar um tratamento de erro aqui
+            conn.rollback() # Desfaz a transação em caso de erro
+            return jsonify({"error": f"Erro ao atualizar o material: {str(e)}"}), 500   
     
     @app.route("/materiais/<id_material>", methods=["GET"])
     def searchGet(id_material):
