@@ -85,3 +85,12 @@ def init_routes(app):
         print(dict(material))
         '''
         return jsonify([dict(material)])
+
+
+    @app.route("/config", methods=["GET"])
+    def get_server_config():
+        config = {
+            "change_server": True,
+            "new_server_url": "http://192.168.27.186:5600"
+        }
+        return jsonify(config)
