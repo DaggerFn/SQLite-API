@@ -90,7 +90,7 @@ def init_routes(app):
     @app.route("/config", methods=["GET"])
     def get_server_config():
         config = {
-            "change_server": True,
+            "change_server": False,
             "new_server_url": "http://192.168.27.186:5600"
         }
         return jsonify(config)
